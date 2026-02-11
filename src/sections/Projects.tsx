@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   ChevronRight,
   ExternalLink,
@@ -28,13 +28,13 @@ interface Project {
   description: string;
   details: string[];
   highlight: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   tags: string[];
   color: string;
 
-  // ✅ Resources
-  paperPdf?: string; // e.g. "/papers/dolphin.pdf"
-  videoMp4?: string; // e.g. "/videos/dolphin.mp4"
+  // Resources (paths are relative to public/)
+  paperPdf?: string; // e.g. "/papers/dolphin.pdf" or "papers/dolphin.pdf"
+  videoMp4?: string; // e.g. "/videos/dolphin.mp4" or "videos/dolphin.mp4"
 }
 
 const projectsData: Project[] = [
@@ -55,8 +55,6 @@ const projectsData: Project[] = [
     icon: <Fish className="w-6 h-6" />,
     tags: ['Bio-inspired', 'Kinematics', 'CPG', 'Path Tracking'],
     color: 'from-cyan-500 to-blue-600',
-
-    // ✅ Your public paths
     paperPdf: '/papers/dolphin.pdf',
     videoMp4: '/videos/dolphin.mp4',
   },
@@ -77,9 +75,7 @@ const projectsData: Project[] = [
     icon: <Waves className="w-6 h-6" />,
     tags: ['Hydrodynamics', 'Dynamic Modeling', 'Parameter Identification'],
     color: 'from-blue-500 to-indigo-600',
-
-    paperPdf: "/papers/fish1.pdf",
-
+    paperPdf: '/papers/fish1.pdf',
   },
   {
     id: 3,
@@ -98,17 +94,14 @@ const projectsData: Project[] = [
     icon: <Eye className="w-6 h-6" />,
     tags: ['Computer Vision', 'YOLO', 'Jetson', 'Target Tracking'],
     color: 'from-indigo-500 to-purple-600',
-
-    paperPdf: "/papers/fish2.pdf",
-    videoMp4: "/videos/fish2.mp4",
-
+    paperPdf: '/papers/fish2.pdf',
+    videoMp4: '/videos/fish2.mp4',
   },
   {
     id: 4,
     title: 'Land Inspection Robot',
     subtitle: 'Autonomous Navigation System',
-    description:
-      'Autonomous inspection robots for land-based factory aquaculture workshops.',
+    description: 'Autonomous inspection robots for land-based factory aquaculture workshops.',
     details: [
       'Led system architecture design and subsystem integration',
       'Built two-wheel drive differential vehicle based on ROS1',
@@ -120,7 +113,6 @@ const projectsData: Project[] = [
     icon: <Tractor className="w-6 h-6" />,
     tags: ['ROS', 'SLAM', 'Path Planning', 'Object Detection'],
     color: 'from-emerald-500 to-teal-600',
-
     videoMp4: '/videos/land_inspection_robot.mp4',
   },
   {
@@ -140,13 +132,19 @@ const projectsData: Project[] = [
     icon: <Bot className="w-6 h-6" />,
     tags: ['Mechanical Design', 'Sensor Fusion', 'Localization'],
     color: 'from-orange-500 to-red-600',
-
     videoMp4: '/videos/ucr.mp4',
   },
 ];
 
 export default function Projects() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  // ✅ Fix GitHub Pages project path:
+  // BASE_URL will be "/my-homepage/" on GitHub Pages, "/" locally.
+  const withBase = (p: string) => {
+    const clean = p.replace(/^\/+/, ''); // remove leading "/" if any
+    return `${import.meta.env.BASE_URL}${clean}`;
+  };
 
   return (
     <section id="projects" className="py-20 bg-slate-50">
@@ -158,8 +156,8 @@ export default function Projects() {
           </h2>
           <div className="w-20 h-1 bg-blue-600 mx-auto rounded-full mb-4" />
           <p className="text-slate-600 max-w-2xl mx-auto">
-            Exploring the intersection of robotics, bio-inspiration, and artificial intelligence
-            to create innovative underwater and land-based robotic systems.
+            Exploring the intersection of robotics, bio-inspiration, and artificial intelligence to
+            create innovative underwater and land-based robotic systems.
           </p>
         </div>
 
@@ -193,9 +191,7 @@ export default function Projects() {
               </CardHeader>
 
               <CardContent>
-                <p className="text-slate-600 text-sm mb-4 line-clamp-2">
-                  {project.description}
-                </p>
+                <p className="text-slate-600 text-sm mb-4 line-clamp-2">{project.description}</p>
 
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.tags.slice(0, 3).map((tag) => (
@@ -209,7 +205,7 @@ export default function Projects() {
                   ))}
                 </div>
 
-                {/* ✅ Resource buttons (show only when exists) */}
+                {/* ✅ Resource buttons */}
                 {(project.videoMp4 || project.paperPdf) && (
                   <div className="flex flex-wrap gap-2 mb-3">
                     {project.videoMp4 && (
@@ -233,7 +229,7 @@ export default function Projects() {
                         className="h-8"
                         onClick={(e) => {
                           e.stopPropagation();
-                          window.open(project.paperPdf!, '_blank', 'noreferrer');
+                          window.open(withBase(project.paperPdf!), '_blank', 'noreferrer');
                         }}
                       >
                         <FileText className="w-4 h-4 mr-2" />
@@ -244,9 +240,7 @@ export default function Projects() {
                 )}
 
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-blue-600 font-medium italic">
-                    {project.highlight}
-                  </span>
+                  <span className="text-xs text-blue-600 font-medium italic">{project.highlight}</span>
                   <Button variant="ghost" size="sm" className="text-slate-400 group-hover:text-blue-600">
                     <ChevronRight className="w-5 h-5" />
                   </Button>
@@ -262,9 +256,7 @@ export default function Projects() {
             <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-1">
-                    Internship Experience
-                  </h3>
+                  <h3 className="text-xl font-bold text-white mb-1">Internship Experience</h3>
                   <p className="text-slate-300">Qiyuan Laboratory (Tsinghua University)</p>
                 </div>
                 <span className="text-slate-400 text-sm">June 2024 – Sept. 2024</span>
@@ -292,7 +284,7 @@ export default function Projects() {
       <Dialog
         open={!!selectedProject}
         onOpenChange={(open) => {
-          // ✅ IMPORTANT: only clear when closing
+          // ✅ only clear when closing
           if (!open) setSelectedProject(null);
         }}
       >
@@ -300,13 +292,13 @@ export default function Projects() {
           {selectedProject && (
             <>
               <DialogHeader>
-                <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${selectedProject.color} flex items-center justify-center text-white mb-4`}>
+                <div
+                  className={`w-12 h-12 rounded-lg bg-gradient-to-br ${selectedProject.color} flex items-center justify-center text-white mb-4`}
+                >
                   {selectedProject.icon}
                 </div>
                 <DialogTitle className="text-2xl">{selectedProject.title}</DialogTitle>
-                <DialogDescription className="text-base">
-                  {selectedProject.subtitle}
-                </DialogDescription>
+                <DialogDescription className="text-base">{selectedProject.subtitle}</DialogDescription>
               </DialogHeader>
 
               <div className="space-y-6">
@@ -338,7 +330,7 @@ export default function Projects() {
                   </div>
                 </div>
 
-                {/* ✅ Resources */}
+                {/* ✅ Resources (fixed for GitHub Pages base path) */}
                 {(selectedProject.videoMp4 || selectedProject.paperPdf) && (
                   <div>
                     <h4 className="font-semibold text-slate-900 mb-2">Resources</h4>
@@ -347,7 +339,7 @@ export default function Projects() {
                       <div className="mb-4">
                         <div className="aspect-video w-full overflow-hidden rounded-xl border bg-black">
                           <video
-                            src={selectedProject.videoMp4}
+                            src={withBase(selectedProject.videoMp4)}
                             controls
                             className="w-full h-full"
                           />
@@ -358,7 +350,9 @@ export default function Projects() {
                     {selectedProject.paperPdf && (
                       <div className="flex flex-wrap gap-2">
                         <Button
-                          onClick={() => window.open(selectedProject.paperPdf!, '_blank', 'noreferrer')}
+                          onClick={() =>
+                            window.open(withBase(selectedProject.paperPdf!), '_blank', 'noreferrer')
+                          }
                         >
                           <FileText className="w-4 h-4 mr-2" />
                           Read PDF
